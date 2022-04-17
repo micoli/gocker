@@ -1,0 +1,59 @@
+---
+version: "3.7"
+
+volumes:
+  vol-mariadb:
+  vol-minio:
+
+services:
+  svc-test01:
+    image: nginx:1.21.6-alpine
+    restart: unless-stopped
+
+  svc-pm2:
+    restart: unless-stopped
+    build:
+      context: .docker/svc-pm2
+    entrypoint: [ "/app/entrypoint.sh" ]
+    labels:
+      - 'gocker-pm2={"host":"127.0.0.1","port": 13129,"username": "admin","password": "admin"}'
+      - 'gocker-log=true'
+    ports:
+      - 13129:9615
+    volumes:
+      - .docker/svc-pm2/app:/app
+
+  svc-supervisor:
+    restart: unless-stopped
+    build:
+      context: .docker/svc-supervisor
+    entrypoint: [ "/app/entrypoint.sh" ]
+    labels:
+      - 'gocker-supervisor={"host":"127.0.0.1","port": 13130,"username": "admin","password": "admin"}'
+      - 'gocker-log=true'
+    ports:
+      - 13130:9001
+    volumes:
+      - .docker/svc-supervisor/app:/app
+      - .docker/svc-supervisor/etc/supervisord.conf:/etc/supervisord.conf
+
+  svc-minio:
+    container_name: svc-minio
+    restart: unless-stopped
+    image: minio/minio:RELEASE.2022-04-01T03-41-39Z
+    entrypoint: ['minio','server','/data']
+    volumes:
+      - vol-minio:/data
+    ports:
+      - "23800:9000"
+
+  svc-mariadb:
+    restart: unless-stopped
+    image: library/mariadb:10.5.13
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=test01
+    volumes:
+      - vol-mariadb:/var/lib/mysql
