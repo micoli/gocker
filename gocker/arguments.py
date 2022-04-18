@@ -3,6 +3,11 @@ import logging
 import os
 
 
+class ArgumentAction:
+    ACTION_GUI = 'gui'
+    ACTION_SHORTCUT_LIST = 'shortcut-list'
+
+
 def parse_main_args():
     parser = argparse.ArgumentParser(
         description='gocker',
@@ -10,12 +15,11 @@ def parse_main_args():
     )
 
     parser.add_argument(
-        '--debug',
-        help='Print lots of debugging statements',
-        action='store_const',
-        dest='loglevel',
-        const=logging.DEBUG,
-        default=logging.WARNING,
+        '--action',
+        action='store',
+        dest='action',
+        choices=[getattr(ArgumentAction, name) for name in dir(ArgumentAction) if name.startswith('ACTION_')],
+        default=ArgumentAction.ACTION_GUI,
     )
     parser.add_argument(
         '--verbose',
@@ -23,6 +27,14 @@ def parse_main_args():
         action='store_const',
         dest='loglevel',
         const=logging.INFO,
+    )
+    parser.add_argument(
+        '--debug',
+        help='Be very verbose',
+        action='store_const',
+        dest='loglevel',
+        const=logging.DEBUG,
+        default=logging.WARNING,
     )
     parser.add_argument(
         '--docker-host',

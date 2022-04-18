@@ -98,4 +98,4 @@ class DockerContainerMetricsThread(StoppableThread):
             return None
 
         usage = stat['cpu_stats']['cpu_usage']['total_usage'] - stat['precpu_stats']['cpu_usage']['total_usage']
-        return usage / (intervals * stat['cpu_stats']['online_cpus'] * 100)
+        return usage / (intervals * stat['cpu_stats']['online_cpus'] * 10000)

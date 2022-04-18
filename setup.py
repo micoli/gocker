@@ -35,6 +35,7 @@ setup(
         "pyyaml",
         "requests",
         "supervisor",
+        "tabulate",
         "urwid",
         "urwidtrees"
     ],
