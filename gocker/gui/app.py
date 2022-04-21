@@ -132,54 +132,38 @@ class App:
 
         shortcut_columns_count = 6
         shortcut_lists = shortcut_list_chunks(shortcut_columns_count)
-        self.frame = urwid.AttrMap(urwid.Frame(
-            header=urwid.LineBox(
-                urwid.BoxAdapter(
-                    urwid.Columns([(
-                        'weight',
-                        1,
-                        urwid.Filler(urwid.Text('\n'.join(shortcut_text_list)))
-                    ) for _, shortcut_text_list in enumerate(shortcut_lists)]),
-                    height=len(shortcut_lists[0])
-                ),
-                title='Dockers'
-            ),
-            body=urwid.Columns([(
-                'weight',
-                40,
-                urwid.AttrMap(urwid.LineBox(
-                    self.containers_list_view,
-                    title='Containers'
-                ), 'window', 'window_selected')
-            ), (
-                'weight',
-                30,
-                urwid.AttrMap(urwid.LineBox(
-                    self.subprocesses_treeview,
-                    title='Subprocesses'
-                ), 'window', 'window_selected')
-            )]),
-            footer=urwid.BoxAdapter(
+        self.frame = urwid.AttrMap(urwid.Pile([
+            ('fixed', len(shortcut_lists[0]) + 2, urwid.LineBox(
                 urwid.Columns([(
                     'weight',
-                    7,
-                    self.container_log_listview_frame
-                ), (
-                    'weight',
-                    3,
-                    self.event_listview_frame
-                )]),
-                height=20
-            )
-        ), 'bg')
+                    1,
+                    urwid.Filler(urwid.Text('\n'.join(shortcut_text_list)))
+                ) for _, shortcut_text_list in enumerate(shortcut_lists)]),
+                title='Gocker'
+            )),
+            ('weight', 60, urwid.Columns([
+                ('weight', 4, urwid.AttrMap(urwid.LineBox(
+                    self.containers_list_view,
+                    title='Containers'
+                ), 'window', 'window_selected')),
+                ('weight', 3, urwid.AttrMap(urwid.LineBox(
+                    self.subprocesses_treeview,
+                    title='Subprocesses'
+                ), 'window', 'window_selected'))
+            ])),
+            ('weight', 40, urwid.Columns([
+                ('weight', 7, self.container_log_listview_frame),
+                ('weight', 3, self.event_listview_frame)
+            ]))
+        ]), 'bg')
 
         self.loop = MainLoop(self.frame, self.palette, unhandled_input=self.unhandled_input, pop_ups=True)
 
         self.tabular_items = TabularItems(self.frame.original_widget, [
-            ['body', 0],
-            ['body', 1],
-            ['footer', 0],
-            ['footer', 1],
+            [1, 0],
+            [1, 1],
+            [2, 0],
+            [2, 1],
         ])
 
         self.message_queue = message_queue

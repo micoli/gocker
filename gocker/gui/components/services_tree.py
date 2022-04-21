@@ -150,7 +150,7 @@ class ContainerSubprocessNode(urwid.WidgetWrap):
                 'container_name',
                 'container_name_selected'
             )),
-            ('weight', 10, urwid.AttrWrap(
+            ('fixed', 15, urwid.AttrWrap(
                 urwid.Text(subprocess['statename']),
                 'scroll_line', 'scroll_line_selected'
             )),
