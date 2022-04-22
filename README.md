@@ -13,6 +13,7 @@
 - start/stop services in docker-compose
 - interact with supervisord instance within a container
 
+[![asciicast](https://asciinema.org/a/i5fXfAIYfsSncklwkY6QFpIQf.svg)](https://asciinema.org/a/i5fXfAIYfsSncklwkY6QFpIQf)
 
 ## Shortcuts
 [//]: <> (command-placeholder-start "gocker --action shortcut-list")
