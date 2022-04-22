@@ -4,52 +4,120 @@ version: "3.7"
 volumes:
   vol-mariadb:
   vol-minio:
+  prometheus_db:
+  grafana_db:
+
+networks:
+  gocker-test:
 
 services:
   svc-test01:
     image: nginx:1.21.6-alpine
     restart: unless-stopped
 
-  svc-pm2:
+  svc-supervisor-1:
     restart: unless-stopped
     build:
-      context: .docker/svc-pm2
+      context: .docker/svc-supervisor
     entrypoint: [ "/app/entrypoint.sh" ]
+    healthcheck:
+      test: [ "CMD", "curl","-f","-k","http://localhost:9001" ]
+      interval: 30s
+      timeout: 1s
     labels:
-      - 'gocker-pm2={"host":"127.0.0.1","port": 13129,"username": "admin","password": "admin"}'
+      - 'gocker-supervisor={"host":"127.0.0.1","port": 23130,"username": "admin","password": "admin"}'
       - 'gocker-log=true'
     ports:
-      - 13129:9615
+      - 23130:9001
     volumes:
-      - .docker/svc-pm2/app:/app
+      - .docker/svc-supervisor/app:/app
+      - .docker/svc-supervisor/etc/supervisord.conf:/etc/supervisord.conf
 
-  svc-supervisor:
+  svc-supervisor-2:
+    restart: unless-stopped
+    build:
+      context: .docker/svc-supervisor
+    entrypoint: [ "/app/entrypoint.sh" ]
+    healthcheck:
+      test: [ "CMD", "curl","-f","-k","http://localhost:9001" ]
+      interval: 30s
+      timeout: 1s
+    labels:
+      - 'gocker-supervisor={"host":"127.0.0.1","port": 23131,"username": "admin","password": "admin"}'
+      - 'gocker-log=true'
+    ports:
+      - "23131:9001"
+    volumes:
+      - .docker/svc-supervisor/app:/app
+      - .docker/svc-supervisor/etc/supervisord.conf:/etc/supervisord.conf
+
+  svc-supervisor-3:
     restart: unless-stopped
     build:
       context: .docker/svc-supervisor
     entrypoint: [ "/app/entrypoint.sh" ]
     labels:
-      - 'gocker-supervisor={"host":"127.0.0.1","port": 13130,"username": "admin","password": "admin"}'
+      - 'gocker-supervisor={"host":"127.0.0.1","port": 23132,"username": "admin","password": "admin"}'
       - 'gocker-log=true'
     ports:
-      - 13130:9001
+      - "23132:9001"
     volumes:
       - .docker/svc-supervisor/app:/app
       - .docker/svc-supervisor/etc/supervisord.conf:/etc/supervisord.conf
 
-  svc-minio:
-    container_name: svc-minio
+  svc-supervisor-4:
+    restart: unless-stopped
+    build:
+      context: .docker/svc-supervisor
+    entrypoint: [ "/app/entrypoint.sh" ]
+    healthcheck:
+      test: [ "CMD", "curl","-f","-k","http://localhost:9001" ]
+      interval: 30s
+      timeout: 1s
+    labels:
+      - 'gocker-supervisor={"host":"127.0.0.1","port": 23133,"username": "admin","password": "admin"}'
+      - 'gocker-log=true'
+    ports:
+      - "23133:9001"
+    volumes:
+      - .docker/svc-supervisor/app:/app
+      - .docker/svc-supervisor/etc/supervisord.conf:/etc/supervisord.conf
+
+  svc-minio-1:
+    container_name: svc-minio-1
     restart: unless-stopped
     image: minio/minio:RELEASE.2022-04-01T03-41-39Z
     entrypoint: ['minio','server','/data']
+    labels:
+      - 'gocker-log=true'
+    healthcheck:
+      test: [ "CMD", "curl","-f","-k","http://localhost:9000" ]
+      interval: 30s
+      timeout: 1s
     volumes:
       - vol-minio:/data
     ports:
-      - "23800:9000"
+      - "23134:9000"
+
+  svc-minio-2:
+    container_name: svc-minio-2
+    restart: unless-stopped
+    image: minio/minio:RELEASE.2022-04-01T03-41-39Z
+    entrypoint: ['minio','server','/data']
+    healthcheck:
+      test: [ "CMD", "curl","-f","-k","http://localhost:9000" ]
+      interval: 30s
+      timeout: 1s
+    volumes:
+      - vol-minio:/data
+    ports:
+      - "23135:9000"
 
   svc-mariadb:
     restart: unless-stopped
     image: library/mariadb:10.5.13
+    labels:
+      - 'gocker-log=true'
     environment:
       - MYSQL_ROOT_PASSWORD=root_password
       - MYSQL_USER=user
@@ -57,3 +125,85 @@ services:
       - MYSQL_DATABASE=test01
     volumes:
       - vol-mariadb:/var/lib/mysql
+
+  svc-grafana:
+    container_name: svc-grafana
+    image: grafana/grafana:8.3.3
+    networks:
+      gocker-test:
+    user: "1000"
+    restart: unless-stopped
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - grafana_db:/var/lib/grafana
+      - .docker/grafana/etc/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - .docker/grafana/etc/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - .docker/grafana/etc/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - .docker/grafana/usr/share/grafana/public/dashboards/home.json:/usr/share/grafana/public/dashboards/home.json
+    depends_on:
+      - svc-prometheus
+    ports:
+      - '23136:3000'
+
+  svc-prometheus:
+    container_name: svc-prometheus
+    image: prom/prometheus:latest
+    networks:
+      gocker-test:
+    restart: unless-stopped
+    depends_on:
+      - svc-node-exporter
+      - svc-cadvisor
+    volumes:
+      - prometheus_db:/var/lib/prometheus
+      - prometheus_db:/prometheus
+      - prometheus_db:/etc/prometheus
+      - .docker/prometheus/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - .docker/prometheus/etc/prometheus/alert.rules:/etc/prometheus/alert.rules
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.route-prefix=/'
+      - '--storage.tsdb.retention.time=6h'
+      - '--web.enable-lifecycle'
+    ports:
+      - '23137:9090'
+
+  svc-node-exporter:
+    container_name: svc-node-exporter
+    image: prom/node-exporter
+    networks:
+      gocker-test:
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points'
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - '23138:9100'
+
+  svc-cadvisor:
+    container_name: svc-cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.43.0
+    networks:
+      gocker-test:
+    restart: unless-stopped
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=1m'
+      - '--disable_metrics=network,tcp,udp,percpu'
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - '23139:8080'
