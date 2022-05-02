@@ -8,6 +8,13 @@ class ArgumentAction:
     ACTION_SHORTCUT_LIST = 'shortcut-list'
 
 
+def get_default_docker_socket():
+    docker_path = '/Users/%s/.colima/docker.sock' % os.getenv('USER')
+    if os.path.exists(docker_path):
+        return 'unix:/' + docker_path
+    return 'unix://var/run/docker.sock'
+
+
 def parse_main_args():
     parser = argparse.ArgumentParser(
         description='gocker',
@@ -41,7 +48,7 @@ def parse_main_args():
         help='docker-host',
         action='store',
         dest='docker_host',
-        default='unix://Users/%s/.colima/docker.sock' % os.getenv('USER'),
+        default=get_default_docker_socket(),
     )
     parser.add_argument(
         '--fsevents-address',
