@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 from gocker.gui.services.docker_container.dataclass import DockerComposeProject
 from gocker.gui.services.docker_container.dataclass import DockerContainerMetric
@@ -39,7 +40,7 @@ class SystemEvent:
 
 @dataclass
 class ContainerMetricsEvent:
-    metric_list: list[DockerContainerMetric]
+    metric_list: List[DockerContainerMetric]
 
 
 @dataclass

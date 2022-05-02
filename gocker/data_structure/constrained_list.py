@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -9,7 +10,7 @@ class _ConstrainedListItem:
 
 class ConstrainedList:
     def __init__(self, max_length: int):
-        self.__stack: list[_ConstrainedListItem] = []
+        self.__stack: List[_ConstrainedListItem] = []
         self.__index = 0
         self.__max_length = max_length
 

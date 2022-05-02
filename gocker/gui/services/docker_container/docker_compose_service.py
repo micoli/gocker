@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 from threading import RLock
+from typing import List
 
 import docker
 import yaml
@@ -28,7 +29,7 @@ class DockerComposeService:
         self.bus = bus
         self.docker_client = docker_client
         self.draw_lock = draw_lock
-        self.docker_compose_projects: list[DockerComposeProject] = []
+        self.docker_compose_projects: List[DockerComposeProject] = []
         self.docker_compose_services_in_config_file: dict[str:list[str]] = {}
         set_listeners(self, self.bus)
 
@@ -118,7 +119,7 @@ class DockerComposeService:
         except FileNotFoundError:
             logging.exception('Config file not found %s ' % config_file)
 
-    def resolve_full_config_filenames(self, working_dir: str, config_files: list[str]) -> list[str]:
+    def resolve_full_config_filenames(self, working_dir: str, config_files: List[str]) -> List[str]:
         return list(filter(
             lambda filename: filename is not None,
             map(

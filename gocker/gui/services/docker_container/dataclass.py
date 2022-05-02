@@ -1,14 +1,15 @@
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
 class DockerComposeProject:
     key: str
     project_name: str
-    config_files: list[str]
+    config_files: List[str]
     working_dir: str
-    running_services: list[str]
-    declared_services: list[str]
+    running_services: List[str]
+    declared_services: List[str]
 
 
 # pylint: disable=too-many-instance-attributes

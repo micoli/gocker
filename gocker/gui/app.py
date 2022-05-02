@@ -3,6 +3,8 @@ import logging
 import os
 import queue
 import shutil
+from typing import List
+
 from datetime import datetime
 from threading import RLock
 
@@ -105,7 +107,7 @@ class App:
 
         set_listeners(self, self.bus)
 
-        self.containers_list: list[DockerContainerMetric] = None
+        self.containers_list: List[DockerContainerMetric] = None
         self.selected_container = None
 
         self.subprocesses_treeview = ServicesTreeView()

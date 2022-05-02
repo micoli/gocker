@@ -1,5 +1,6 @@
 import logging
 import re
+from typing import List
 
 import urwid
 from dependency_injector.wiring import Provide
@@ -289,8 +290,8 @@ class ContainersListView(urwid.WidgetWrap):
 
     def set_containers_list(
             self,
-            containers: list[DockerContainerMetric],
-            logged_containers: list[str],
+            containers: List[DockerContainerMetric],
+            logged_containers: List[str],
             tagged_container_name: str,
     ):
         self.logged_containers = logged_containers

@@ -129,3 +129,21 @@ Merge requests are welcomed
 - plugin events messenger
 - pm2 subprocesses
 - local minimalist htop
+
+
+# Test with different python version:
+
+```
+docker run --rm -it -v $PWD:/app -v /var/run/docker.sock:/var/run/docker.sock python:3.7.13-buster bash
+```
+
+in docker :
+```
+cd /app;
+export DOCKERVERSION=18.03.1-ce;
+curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKERVERSION}.tgz && tar xzvf docker-${DOCKERVERSION}.tgz --strip 1 -C /usr/local/bin docker/docker && rm docker-${DOCKERVERSION}.tgz
+docker ps
+curl --silent -XGET --unix-socket /run/docker.sock http://localhost/version
+./setup.py develop
+gocker --docker-host unix:///var/run/docker.sock
+```
