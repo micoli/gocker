@@ -23,6 +23,7 @@ from gocker.gui.components.containers_list import ContainersListView
 from gocker.gui.components.event_list import EventListView
 from gocker.gui.components.services_tree import ServicesTreeView
 from gocker.gui.components.shortcuts_help import PopupShortcutsHelp
+from gocker.gui.components.stack import Stack
 from gocker.gui.dependency_injection import Container
 from gocker.gui.events import LogReceivedEvent, ContainerLifecycleEvent, \
     ContainerMetricsEvent, SubprocessMetricsEvent, SystemEvent
@@ -134,7 +135,7 @@ class App:
 
         shortcut_columns_count = 6
         shortcut_lists = shortcut_list_chunks(shortcut_columns_count)
-        self.frame = urwid.AttrMap(urwid.Pile([
+        self.frame = urwid.AttrMap(Stack([
             ('fixed', len(shortcut_lists[0]) + 2, urwid.LineBox(
                 urwid.Columns([(
                     'weight',
