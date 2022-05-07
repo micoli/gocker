@@ -224,7 +224,7 @@ class ContainersListView(urwid.WidgetWrap):
         self.logged_containers = []
         self.tagged_container_name = None
         self.sort_columns = CircularList('container_name', 'cpu_percentage', 'memory_usage')
-        self.sort_order_desc = True
+        self.sort_order_desc = False
 
         self.frame = urwid.Frame(
             header=self.search_edit,
