@@ -63,7 +63,7 @@ class SimpleArrowTree(ArrowTree):
         return line
 
 
-class FocusableNode(urwid.WidgetWrap):
+class UnFocusableNode(urwid.WidgetWrap):
     def __init__(self, txt):
         urwid.WidgetWrap.__init__(
             self,
@@ -75,7 +75,7 @@ class FocusableNode(urwid.WidgetWrap):
         )
 
     def selectable(self):
-        return True
+        return False
 
     @staticmethod
     def keypress(_, key):
@@ -262,8 +262,8 @@ class ServicesTreeView(urwid.WidgetWrap):
         self.compose_project_nodes = []
         self.compose_project_service_nodes = {}
         self.tree = urwidtrees.tree.SimpleTree([
-            (FocusableNode('Subprocesses'), self.container_subprocesses_nodes),
-            (FocusableNode('Docker-Compose Services'), self.compose_project_nodes)
+            (UnFocusableNode('Subprocesses'), self.container_subprocesses_nodes),
+            (UnFocusableNode('Docker-Compose Services'), self.compose_project_nodes)
         ])
         self.tree_widget = urwidtrees.widgets.TreeBox(
             SimpleArrowTree(self.tree),
