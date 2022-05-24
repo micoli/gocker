@@ -89,13 +89,15 @@ class DockerContainerMetricsThread(StoppableThread):
         return stat['memory_stats']['usage']
 
     @staticmethod
-    def calculate_cpu_percentage(stat, intervals):
+    def calculate_cpu_percentage(metric, intervals):
         if intervals is None:
             return None
         if intervals == 0:
             return None
-        if 'online_cpus' not in stat['cpu_stats']:
+        if 'online_cpus' not in metric['cpu_stats']:
             return None
 
-        usage = stat['cpu_stats']['cpu_usage']['total_usage'] - stat['precpu_stats']['cpu_usage']['total_usage']
-        return usage / (intervals * stat['cpu_stats']['online_cpus'] * 10000)
+        cpu_delta = metric['cpu_stats']['cpu_usage']['total_usage'] - metric['precpu_stats']['cpu_usage']['total_usage']
+        system_delta = metric['cpu_stats']['system_cpu_usage'] - metric['precpu_stats']['system_cpu_usage']
+
+        return cpu_delta / system_delta * metric['cpu_stats']['online_cpus'] * 100
