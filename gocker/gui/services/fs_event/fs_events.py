@@ -27,7 +27,10 @@ class FsEventsLogThread(StoppableThread):
     def run(self):
         if self.fsevents_port == 0:
             return
-        request = requests.get('http://%s:%s/logs' % (self.fsevents_address, self.fsevents_port), stream=True)
+        request = requests.get(
+            'http://%s:%s/logs' % (self.fsevents_address, self.fsevents_port),
+            stream=True,
+            timeout=30)
         if request.encoding is None:
             request.encoding = 'utf-8'
         try:

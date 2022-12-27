@@ -1,4 +1,4 @@
-# Gantry Crane
+# GOCKER
 
 `Gui on dOCKER`
 
@@ -13,7 +13,7 @@
 - start/stop services in docker-compose
 - interact with supervisord instance within a container
 
-[![asciicast](https://asciinema.org/a/i5fXfAIYfsSncklwkY6QFpIQf.svg)](https://asciinema.org/a/i5fXfAIYfsSncklwkY6QFpIQf)
+[![asciicast](https://asciinema.org/a/548247.svg)](https://asciinema.org/a/548247)
 
 ## Shortcuts
 [//]: <> (command-placeholder-start "gocker --action shortcut-list")
@@ -101,11 +101,11 @@ example:
 [//]: <> (command-placeholder-start "gocker --help")
 ```
 usage: gocker [-h] [--action {gui,shortcut-list}] [--verbose] [--debug]
-                    [--docker-host DOCKER_HOST]
-                    [--fsevents-address FSEVENTS_ADDRESS]
-                    [--fsevents-port FSEVENTS_PORT]
+              [--docker-host DOCKER_HOST]
+              [--fsevents-address FSEVENTS_ADDRESS]
+              [--fsevents-port FSEVENTS_PORT]
 
-Gocker
+gocker
 
 optional arguments:
   -h, --help            show this help message and exit

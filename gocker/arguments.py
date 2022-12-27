@@ -8,11 +8,19 @@ class ArgumentAction:
     ACTION_SHORTCUT_LIST = 'shortcut-list'
 
 
+def get_docker_socket_paths():
+    return [
+        '/Users/%s/.colima/docker.sock' % os.getenv('USER'),
+        '/Users/%s/.docker/run/docker.sock' % os.getenv('USER'),
+        '/var/run/docker.sock'
+    ]
+
 def get_default_docker_socket():
-    docker_path = '/Users/%s/.colima/docker.sock' % os.getenv('USER')
-    if os.path.exists(docker_path):
-        return 'unix:/' + docker_path
-    return 'unix://var/run/docker.sock'
+    for path in get_docker_socket_paths():
+        if not os.path.exists(path):
+            continue
+        return 'unix:/' + path
+    return None
 
 
 def parse_main_args():

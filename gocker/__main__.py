@@ -7,6 +7,7 @@ from tabulate import tabulate
 
 from gocker.arguments import parse_main_args, ArgumentAction
 from gocker.gui import gui
+from gocker.arguments import get_docker_socket_paths
 from gocker.gui.shortcut import shortcuts
 
 colored_traceback.add_hook(always=True)
@@ -45,6 +46,10 @@ def main() -> None:
     if args.action == ArgumentAction.ACTION_GUI:
         init_logger(args.loglevel, GUI_LOG_FILE)
         logging.info("Starting gui")
+        if args.docker_host is None:
+            print(f"Can't find a valid docker.sock path in {repr(get_docker_socket_paths())}")
+            sys.exit(1)
+
         gui(args.docker_host, args.fsevents_address, args.fsevents_port)
         sys.exit(0)
 

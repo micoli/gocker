@@ -10,12 +10,12 @@ class EventListViewItem(urwid.WidgetWrap):
         self.content = event
         cols = [
             ('fixed', 8, urwid.AttrWrap(
-                urwid.Text('%s' % datetime.fromtimestamp(event.timestamp).strftime('%H:%M:%S')),
+                urwid.Text(datetime.fromtimestamp(event.timestamp).strftime('%H:%M:%S')),
                 'container_name',
                 'container_name_selected'
             )),
             ('weight', 1, urwid.AttrWrap(
-                urwid.Text(event.type),
+                urwid.Text(f"{event.type:.8}"),
                 'container_name',
                 'container_name_selected'
             )),

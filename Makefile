@@ -1,12 +1,12 @@
 init:
-	pip3 install -e ".[testing]"
+	poetry install
 
 test: clean init
-	python3 setup.py --verbose test
+	poetry install --with test
 	python3 -m pylint gocker/ test/
 
 test-e2e: clean init
-	cd tmp/test-basic;gocker --list
+	gocker --shortcut-list
 
 clean:
 	find . -name "__pycache__" | xargs rm -r

@@ -68,7 +68,7 @@ class SupervisordSubprocessLogThread(StoppableThread):
         self.group_name = group_name
         self.stream = stream
         url = '%s/logtail/%s/%s' % (self.supervisor_client_options['url'], self.group_name, stream)
-        self.request = requests.get(url, stream=True)
+        self.request = requests.get(url, stream=True, timeout=20)
         if self.request.encoding is None:
             self.request.encoding = 'utf-8'
 
