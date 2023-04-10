@@ -1,6 +1,9 @@
 import argparse
 import logging
 import os
+import json
+
+from gocker.process import process_exec
 
 
 class ArgumentAction:
@@ -9,11 +12,15 @@ class ArgumentAction:
 
 
 def get_docker_socket_paths():
-    return [
-        '/Users/%s/.colima/docker.sock' % os.getenv('USER'),
-        '/Users/%s/.docker/run/docker.sock' % os.getenv('USER'),
-        '/var/run/docker.sock'
-    ]
+    for context_string in process_exec(["docker", "context", "ls", "--format", "json"]).split("\n"):
+        context = json.loads(context_string)
+        if context['Current']:
+            yield context['DockerEndpoint'].replace('unix://', '')
+
+    yield '/Users/%s/.colima/docker.sock' % os.getenv('USER')
+    yield '/Users/%s/.docker/run/docker.sock' % os.getenv('USER')
+    yield '/var/run/docker.sock'
+
 
 def get_default_docker_socket():
     for path in get_docker_socket_paths():
