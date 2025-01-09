@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import json
+import shutil
 
 from gocker.process import process_exec
 
@@ -12,7 +13,7 @@ class ArgumentAction:
 
 
 def get_docker_socket_paths():
-    for context_string in process_exec(["docker", "context", "ls", "--format", "json"]).split("\n"):
+    for context_string in process_exec([shutil.which('docker'), "context", "ls", "--format", "json"]).split("\n"):
         context = json.loads(context_string)
         if context['Current']:
             yield context['DockerEndpoint'].replace('unix://', '')

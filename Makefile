@@ -6,7 +6,7 @@ test: clean init
 	python3 -m pylint gocker/ test/
 
 test-e2e: clean init
-	gocker --shortcut-list
+	gocker --action shortcut-list
 
 test-installation:
 	docker run -it -v $$PWD/test:/app python:3.10 bash -c /app/installation.sh

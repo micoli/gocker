@@ -35,7 +35,7 @@ class DockerComposeService:
 
     @listener
     def on_compose_service_action_command(self, command: ComposeServiceActionCommand):
-        arguments = [shutil.which('docker-compose')]
+        arguments = [shutil.which('docker'), 'compose']
         for config_file in command.compose_project.config_files:
             arguments.append('-f')
             arguments.append(config_file)
