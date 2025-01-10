@@ -58,7 +58,12 @@
 ```
 [//]: <> (command-placeholder-end)
 
-## Installation
+## Docker Installation
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it ghcr.io/micoli/gocker
+```
+
+## Local Installation
 ```
 pip install git+https://github.com/micoli/gocker.git
 ```
